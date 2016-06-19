@@ -1,9 +1,16 @@
 var QuickDrive = (function (config, json) {
 	var QuickDrive = {};
 
+	QuickDrive.annotationFunctions = {
+		REPLACE_TEXT: replaceValue,
+		FOR_EACH: processForEach,
+		NONE: function(properties) {
+			return;
+		}
+	};
 	var annotationType = {
-		'=': replaceValue,
-		'~': processForEach,
+		'=': QuickDrive.annotationFunctions.REPLACE_TEXT,
+		'~': QuickDrive.annotationFunctions.FOR_EACH
 	};
 	var config = {
 		folderName: 'QuickDriveFolder',
@@ -34,13 +41,11 @@ var QuickDrive = (function (config, json) {
 		return text[0] == '{' && text[text.length - 1] == '}';
 	};
 
-	function getAnnotationType(text) {
+	QuickDrive.getAnnotationType = function(text) {
 		if (isAnottation(text)) {
-			return annotationType[text[1]];
+			return annotationType[text[1]] || QuickDrive.annotationFunctions.NONE;
 		} else {
-			return function (text) {
-				return text;
-			};
+			return QuickDrive.annotationFunctions.NONE;
 		}
 	};
 
@@ -107,13 +112,13 @@ var QuickDrive = (function (config, json) {
 		// 	}
 		// }
 	};
+
+	return QuickDrive;
 })({}, {});
 
 function doGet(e) {
 	var json = e ? e.parameters : {};
-	json.agencyName = 'my sheet';
-
-	var newSpreadSheet = getSheetNewDocument(json)
+	var newSpreadSheet = QuickDrive.getSheetNewDocument(json);
 	var sheet = newSpreadSheet.sheet;
 
 	var range = sheet.getRange(1, 1, sheet.getMaxLines(), sheet.getMaxColumns());
@@ -134,3 +139,7 @@ function doGet(e) {
 
 	return ContentService.createTextOutput(newSpreadSheet.id);
 };
+
+if (typeof module !== 'undefined' && module.exports != null) {
+    exports.QuickDrive = QuickDrive;
+}
