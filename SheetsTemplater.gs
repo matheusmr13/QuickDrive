@@ -4,7 +4,7 @@ var QuickDrive = (function (config, json) {
 	QuickDrive.annotationFunctions = {
 		REPLACE_TEXT: replaceValue,
 		FOR_EACH: processForEach,
-		NONE: function(properties) {
+		NONE: function (properties) {
 			return;
 		}
 	};
@@ -41,9 +41,32 @@ var QuickDrive = (function (config, json) {
 		return text[0] == '{' && text[text.length - 1] == '}';
 	};
 
-	QuickDrive.getAnnotationType = function(text) {
+	var isValidAnnotation = function (text) {
+		if (text.length < 4) {
+			return false;
+		}
+		var insideText = text.substring(2, text.length - 1),
+			textParts = insideText.split('.'),
+			validRegex = /^\w+$/;
+
+		for (var i = 0; i < textParts.length; i++) {
+			if (!textParts[i]) {
+				return false;
+			}
+			if (!validRegex.test(textParts[i])) {
+				return false;
+			}
+		}
+		return true;
+	};
+
+	QuickDrive.getAnnotationType = function (text) {
 		if (isAnottation(text)) {
-			return annotationType[text[1]] || QuickDrive.annotationFunctions.NONE;
+			if (isValidAnnotation(text)) {
+				return annotationType[text[1]] || QuickDrive.annotationFunctions.NONE;
+			} else {
+				return QuickDrive.annotationFunctions.NONE;
+			}
 		} else {
 			return QuickDrive.annotationFunctions.NONE;
 		}
@@ -141,5 +164,5 @@ function doGet(e) {
 };
 
 if (typeof module !== 'undefined' && module.exports != null) {
-    exports.QuickDrive = QuickDrive;
+	exports.QuickDrive = QuickDrive;
 }
