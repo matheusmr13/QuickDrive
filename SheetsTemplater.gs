@@ -34,7 +34,7 @@ function mock() {
 };
 
 function getTemplateIdByPaymentType (paymentType) {
-	return {'Cheque Pré-Datado' : '1TM7lRN_HOsfYEvGazw3cvPD7D4Xy8YQTCtDRfYH53d0'}[paymentType];
+	return '1l7sMxfD-qh4sbeu6Ax0z6v84YdahXDTG8hlPcE_vkEo';
 };
 
 function getSheetNewDocument (json) {
@@ -58,6 +58,7 @@ function isForEach(text) {
 };
 
 function processForEach (properties) {
+  return;
     var sheet = properties.sheet;
 	var lineToRemove = properties.i;
 	var initialColumn = properties.j;
@@ -104,7 +105,7 @@ function processForEach (properties) {
 };
 
 function replaceValue(sheet, row, col, json, command) {
-	sheet.getRange(row, col).setValue(json[command.substring(1, command.length - 1)] || '');
+	sheet.getRange(row, col).setValue(json[command.split('.')[1].substring(0, command.split('.')[1].length - 1)] || '');
 };
 
 function processCell (properties) {
@@ -118,10 +119,8 @@ function processCell (properties) {
 };
 
 function doGet(e) {
-	var json = mock();
-	//  if (e.parameters.checkingSystem != "COINFO_PAXPRO")
-	//    return;
-	//  var json = e ? e.parameters : {};
+  var json = e ? e.parameters : {};
+  json.agencyName = 'my sheet';
 
    var newSpreadSheet = getSheetNewDocument(json)
 	var sheet = newSpreadSheet.sheet;
