@@ -147,7 +147,7 @@ var QuickDrive = (function (config) {
 })({}, {});
 
 function doGet(e) {
-	var json = e ? e.parameters : {
+	var json = e ? JSON.parse(e.parameters.data) : {
 		header_title: 'my header title',
 		user: {
 			skills: [{
@@ -195,7 +195,7 @@ function doGet(e) {
 		}
 	}
 
-	return ContentService.createTextOutput(newSpreadSheet.id);
+	return ContentService.createTextOutput(newSpreadSheet.fileId);
 };
 
 if (typeof module !== 'undefined' && module.exports != null) {
