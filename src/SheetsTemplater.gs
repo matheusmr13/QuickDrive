@@ -1,4 +1,4 @@
-var QuickDrive = (function (config, json) {
+var QuickDrive = (function (config) {
 	var QuickDrive = {};
 
 	QuickDrive.annotationFunctions = {
@@ -22,7 +22,7 @@ var QuickDrive = (function (config, json) {
 		}]
 	};
 
-	function getSheetNewDocument(json) {
+	QuickDrive.getSheetNewDocument = function (json) {
 		var templateFile = DriveApp.getFileById(config.templateId);
 		var newFile = templateFile.makeCopy(config.newDocumentName, DriveApp.getFoldersByName(config.folderName).next());
 
@@ -61,8 +61,9 @@ var QuickDrive = (function (config, json) {
 	};
 
 	QuickDrive.getAnnotationType = function (text) {
+
 		if (isAnottation(text)) {
-			if (isValidAnnotation(text)) {
+			if (isValidAnnotation(text.split(':')[0])) {
 				return annotationType[text[1]] || QuickDrive.annotationFunctions.NONE;
 			} else {
 				return QuickDrive.annotationFunctions.NONE;
@@ -72,91 +73,125 @@ var QuickDrive = (function (config, json) {
 		}
 	};
 
+	var getValueOnJson = function (jsonObject, path) {
+		var pathSplit = path.split('.');
+		if (typeof jsonObject === 'undefined') {
+			jsonObject = {};
+		}
+		if (pathSplit.length == 1) {
+			return jsonObject[path] || '';
+		} else if (pathSplit.length > 1) {
+			var jsonParent = jsonObject[pathSplit[0]];
+			var key = pathSplit.shift();
+			return getValueOnJson(jsonParent, pathSplit.toString().replace(/\,/g, '.'));
+		}
+	}
+
 	function processForEach(properties) {
-		return;
 		var sheet = properties.sheet;
-		var lineToRemove = properties.i;
+		var initialLine = properties.i;
 		var initialColumn = properties.j;
-		var loopName = properties.values[properties.i][properties.j].substring(2, properties.values[properties.i][properties.j].length - 1);
-		properties.j++;
+		var command = properties.values[properties.i][properties.j];
+		var loopName = command.substring(2, command.length - 1);
+
 		var loopSplit = loopName.split(':');
 		var arrayName = loopSplit[0].trim();
 		var entityName = loopSplit[1].trim();
-		var array = properties.json[arrayName];
-		var propertiesHeader = [];
+		var originalJson = properties.json;
+		var array = getValueOnJson(properties.json, arrayName);
+		if (!array) {
+			return;
+		}
+		var endColumn = properties.j;
+		var endLine = properties.i + array.length - 1;
 
-		sheet.insertRows(properties.i + 2, array.length - 1);
-		for (; properties.values[properties.i][properties.j] != '{~}'; properties.j++) {
-			properties.actualValue = properties.values[properties.i][properties.j];
-			if (properties.actualValue != '') {
-				if (properties.actualValue.indexOf('.') == -1) {
-					for (var columnFixedIndex = 0; columnFixedIndex < array.length; columnFixedIndex++) {
-						sheet.getRange(properties.i + 1 + columnFixedIndex, properties.j + 1).setValue(properties.json[properties.actualValue.substring(1, properties.actualValue.length - 1)] || '');
-					}
-				} else {
-					propertiesHeader.push({
-						j: properties.j,
-						value: properties.actualValue.substring(1, properties.actualValue.length - 1)
-					});
-				}
+		properties.j++;
+		sheet.insertRowsBefore(properties.i + 1, array.length - 1);
+
+		for (; properties.values[properties.i][endColumn] != '{~}'; endColumn++) {}
+		for (var i = 0; i < array.length; i++) {
+			sheet.getRange(properties.i + array.length, initialColumn + 2, 1, endColumn - initialColumn - 1).copyTo(sheet.getRange(properties.i + array.length - i, initialColumn + 2, 1, endColumn - initialColumn - 1));
+		}
+		sheet.getRange(endLine + 1, initialColumn + 1).setValue('');
+		sheet.getRange(endLine + 1, endColumn + 1).setValue('');
+		properties.values = sheet.getRange(1, 1, sheet.getMaxRows(), sheet.getMaxColumns()).getValues();
+
+		for (var i = initialLine + 1, index = 0; i < endLine + 2; i++, index++) {
+			for (var j = initialColumn + 2; j < endColumn; j++) {
+				properties.i = i - 1;
+				properties.j = j - 1;
+				properties.json[entityName] = array[index];
+				QuickDrive.processCell(properties);
 			}
 		}
 
-		Logger.log(lineToRemove + '  /  ' + initialColumn + '  /  ' + 1 + '  /  ' + propertiesHeader.length);
-		Logger.log(initialColumn + '  /  ' + (propertiesHeader.length + initialColumn) + '  /  ' + (properties.i + 2) + '  /  ' + (properties.i + array.length + 1));
-		properties.i++;
-		for (var k = 0; k < array.length; k++) {
-			for (var h = 0; h < propertiesHeader.length; h++) {
-				var propertie = propertiesHeader[h];
-				var propertieValue = propertie.value.split('.')[1];
-				Logger.log(propertie + '   ' + array[k][propertie]);
-
-				var arrayCell = sheet.getRange(properties.i + k, propertie.j + 1).setValue(array[k][propertieValue] || '');
-			}
-		}
-		//  sheet.getRange(lineToRemove, initialColumn + 1, 1, propertiesHeader.length).copyFormatToRange(sheet, initialColumn + 1, propertiesHeader.length + initialColumn, i + 1, i + array.length);
-		sheet.getRange(lineToRemove + 1, initialColumn + 1).setValue('');
-		sheet.getRange(lineToRemove + 1, properties.j + 1).setValue('');
+		properties.i = endLine;
+		properties.j = endColumn + 1;
 	};
 
-	function replaceValue(sheet, row, col, json, command) {
-		sheet.getRange(row, col).setValue(json[command.split('.')[1].substring(0, command.split('.')[1].length - 1)] || '');
+	function replaceValue(properties) {
+		var row = properties.i + 1,
+			col = properties.j + 1,
+			command = properties.values[properties.i][properties.j],
+			sheet = properties.sheet,
+			json = properties.json;
+		sheet.getRange(row, col).setValue(getValueOnJson(json, command.substring(2, command.length - 1)));
 	};
 
-	function processCell(properties) {
+	QuickDrive.processCell = function (properties) {
 		var cellValue = properties.values[properties.i][properties.j];
-		var annotationFunction = getAnnotationType(cellValue)(properties);
-		//
-		// if (isAnottation(properties.values[properties.i][properties.j])) {
-		// 	if (isForEach(properties.values[properties.i][properties.j])) {
-		// 		processForEach(properties);
-		// 	} else {
-		// 		replaceValue(properties.sheet, properties.i + 1, properties.j + 1, properties.json, properties.values[properties.i][properties.j]);
-		// 	}
-		// }
+		var annotationFunction = QuickDrive.getAnnotationType(cellValue)(properties);
 	};
 
 	return QuickDrive;
 })({}, {});
 
 function doGet(e) {
-	var json = e ? e.parameters : {};
+	var json = e ? e.parameters : {
+		header_title: 'my header title',
+		user: {
+			skills: [{
+					language: 'java',
+					level: '3'
+        }, {
+					language: 'ruby',
+					level: '4'
+        },
+				{
+					language: 'python',
+					level: '1'
+        }
+          ],
+			experiences: [
+				{
+					cource_name: 'ciencia da computacao',
+					institution: 'unicamp'
+          },
+				{
+					cource_name: 'informática',
+					institution: 'cotuca'
+          }
+          ],
+			name: 'Matheus'
+		}
+	};
 	var newSpreadSheet = QuickDrive.getSheetNewDocument(json);
 	var sheet = newSpreadSheet.sheet;
 
-	var range = sheet.getRange(1, 1, sheet.getMaxLines(), sheet.getMaxColumns());
+	var range = sheet.getRange(1, 1, sheet.getMaxRows(), sheet.getMaxColumns());
 	var values = range.getValues();
-
+	var myThis = {};
+	myThis['this'] = json;
 	var properties = {
 		sheet: sheet,
-		json: json,
+		json: myThis,
 		values: values,
 		i: 0,
 		j: 0
 	};
 	for (properties.i = 0; properties.i < properties.values.length; properties.i++) {
 		for (properties.j = 0; properties.j < properties.values[properties.i].length; properties.j++) {
-			processCell(properties);
+			QuickDrive.processCell(properties);
 		}
 	}
 
