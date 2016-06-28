@@ -13,18 +13,25 @@ var QuickDrive = (function (config) {
 		'~': QuickDrive.annotationFunctions.FOR_EACH
 	};
 	var config = {
-		folderName: 'QuickDriveFolder',
-		templateId: '1l7sMxfD-qh4sbeu6Ax0z6v84YdahXDTG8hlPcE_vkEo',
+		folderId: '0ByQE0cDEoa0qLUlPU21xVzNqZVk',
+		templateId: '1stc2xmCa3QB61bTR52tomteWUOwlVZ4s8OSKWG5dP_8',
 		newDocumentName: 'My new sheet',
+		stripeColor: '#EEEEEE',
+		stripeFirst: false,
 		permissions: [{
 			access: DriveApp.Access.ANYONE_WITH_LINK,
 			permission: DriveApp.Permission.VIEW
 		}]
 	};
+	QuickDrive.setConfigs = function (newConfig) {
+		for (var propertie in newConfig) {
+			config[propertie] = newConfig[propertie];
+		}
+	}
 
 	QuickDrive.getSheetNewDocument = function (json) {
 		var templateFile = DriveApp.getFileById(config.templateId);
-		var newFile = templateFile.makeCopy(config.newDocumentName, DriveApp.getFoldersByName(config.folderName).next());
+		var newFile = templateFile.makeCopy(config.newDocumentName, DriveApp.getFolderById(config.folderId));
 
 		for (var i = 0; i < config.permissions.length; i++) {
 			newFile.setSharing(config.permissions[i].access, config.permissions[i].permission);
@@ -99,16 +106,20 @@ var QuickDrive = (function (config) {
 		var entityName = loopSplit[1].trim();
 		var originalJson = properties.json;
 		var array = getValueOnJson(properties.json, arrayName);
+
+		var endColumn = properties.j;
+		for (; properties.values[properties.i][endColumn] != '{~}'; endColumn++) {}
+
 		if (!array) {
+			sheet.getRange(initialLine + 1, initialColumn + 1).setValue('');
+			sheet.getRange(initialLine + 1, endColumn + 1).setValue('');
 			return;
 		}
-		var endColumn = properties.j;
 		var endLine = properties.i + array.length - 1;
 
 		properties.j++;
 		sheet.insertRowsBefore(properties.i + 1, array.length - 1);
 
-		for (; properties.values[properties.i][endColumn] != '{~}'; endColumn++) {}
 		for (var i = 0; i < array.length; i++) {
 			sheet.getRange(properties.i + array.length, initialColumn + 2, 1, endColumn - initialColumn - 1).copyTo(sheet.getRange(properties.i + array.length - i, initialColumn + 2, 1, endColumn - initialColumn - 1));
 		}
@@ -122,11 +133,16 @@ var QuickDrive = (function (config) {
 				properties.j = j - 1;
 				properties.json[entityName] = array[index];
 				QuickDrive.processCell(properties);
+
+			}
+			if (config.stripeFirst == !(index % 2)) {
+				sheet.getRange(i, 1, 1, sheet.getMaxColumns()).setBackground(config.stripeColor);
 			}
 		}
 
 		properties.i = endLine;
 		properties.j = endColumn + 1;
+		properties.json[entityName] = undefined;
 	};
 
 	function replaceValue(properties) {
@@ -146,35 +162,9 @@ var QuickDrive = (function (config) {
 	return QuickDrive;
 })({}, {});
 
-function doGet(e) {
-	var json = e ? JSON.parse(e.parameters.data) : {
-		header_title: 'my header title',
-		user: {
-			skills: [{
-					language: 'java',
-					level: '3'
-        }, {
-					language: 'ruby',
-					level: '4'
-        },
-				{
-					language: 'python',
-					level: '1'
-        }
-          ],
-			experiences: [
-				{
-					cource_name: 'ciencia da computacao',
-					institution: 'unicamp'
-          },
-				{
-					cource_name: 'informática',
-					institution: 'cotuca'
-          }
-          ],
-			name: 'Matheus'
-		}
-	};
+function doPost(e) {
+	var json = e ? JSON.parse(e.parameters.data[0]) : {};
+	var config = e ? (e.parameters.config ? JSON.parse(e.parameters.config[0]) : {}) : {};
 	var newSpreadSheet = QuickDrive.getSheetNewDocument(json);
 	var sheet = newSpreadSheet.sheet;
 
@@ -189,6 +179,7 @@ function doGet(e) {
 		i: 0,
 		j: 0
 	};
+	QuickDrive.setConfigs(config);
 	for (properties.i = 0; properties.i < properties.values.length; properties.i++) {
 		for (properties.j = 0; properties.j < properties.values[properties.i].length; properties.j++) {
 			QuickDrive.processCell(properties);
