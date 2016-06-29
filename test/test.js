@@ -1,60 +1,5 @@
-
-var  SheetMock = function(matrix) {
-	var matrix = matrix || [[]];
-
-	var CellMock = function() {
-		var value = "";
-		this.setValue = function(newValue) {
-			this.value = newValue;
-		};
-
-		this.getValue = function() {
-			return value;
-		};
-	};
-
-	var CellGroupMock = function(matrix) {
-		var matrix = matrix || [[]];
-
-		this.getValues = function() {
-			var values = [];
-			for (var i = row; i < lines;i++) {
-				values[i] = [];
-				for (var j = col; j < cols; j++) {
-					values[i][j] = matrix[i][j];
-				}
-			}
-			return values;
-		};
-
-		this.setValue = function(value) {
-			for (var i = 0; i < matrix.length;i++) {
-				for (var j = 0; j < matrix.length; j++) {
-					matrix[i][j] = value;
-				}
-			}
-		};
-	};
-
-	SheetMock.getRange = function(row, col, lines, cols) {
-		var newMatrix = [[]];
-		for (var i = row; i < lines;i++) {
-			newMatrix[i] = [];
-			for (var j = col; j < cols; j++) {
-				newMatrix[i][j];
-			}
-		}
-		return new CellGroupMock(newMatrix);
-	};
-};
-
-
-
-DriveApp = {};
-DriveApp.Access = {};
-DriveApp.Permission = {};
-
-var QuickDrive = require('../SheetsTemplater.gs').QuickDrive;
+var DriveApp = require('./mock/DriveAppMock.js').DriveAppMock.DriveApp;
+var QuickDrive = require('../src/SheetsTemplater.gs').QuickDrive(DriveApp());
 var assert = require('chai').assert;
 
 describe('QuickDrive', function () {
@@ -83,6 +28,11 @@ describe('QuickDrive', function () {
 			assert.equal(QuickDrive.annotationFunctions.FOR_EACH, QuickDrive.getAnnotationType('{~mylist}'));
 			assert.equal(QuickDrive.annotationFunctions.FOR_EACH, QuickDrive.getAnnotationType('{~foo.myList}'));
 			assert.equal(QuickDrive.annotationFunctions.FOR_EACH, QuickDrive.getAnnotationType('{~foo.bar.with.many.properties.myList}'));
+		});
+	});
+	describe('merge configs', function () {
+		it('it should keep default config', function () {
+			var config = QuickDrive.confi
 		});
 	});
 });

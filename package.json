@@ -1,0 +1,19 @@
+{
+  "name": "QuickDrive",
+  "version": "1.0.0",
+  "description": "Templates with google spreadsheet",
+  "author": "Matheus Martins do Rego",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:matheusmr13/quickdrive.git"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3"
+  },
+  "devDependencies": {}
+}

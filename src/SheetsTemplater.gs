@@ -1,4 +1,4 @@
-var QuickDrive = (function (config) {
+var QuickDrive = function (DriveApp, newConfig) {
 	var QuickDrive = {};
 
 	QuickDrive.annotationFunctions = {
@@ -12,7 +12,7 @@ var QuickDrive = (function (config) {
 		'=': QuickDrive.annotationFunctions.REPLACE_TEXT,
 		'~': QuickDrive.annotationFunctions.FOR_EACH
 	};
-	var config = {
+	this.config = {
 		folderId: '0ByQE0cDEoa0qLUlPU21xVzNqZVk',
 		templateId: '1stc2xmCa3QB61bTR52tomteWUOwlVZ4s8OSKWG5dP_8',
 		newDocumentName: 'My new sheet',
@@ -23,13 +23,11 @@ var QuickDrive = (function (config) {
 			permission: DriveApp.Permission.VIEW
 		}]
 	};
-	QuickDrive.setConfigs = function (newConfig) {
-		for (var propertie in newConfig) {
-			config[propertie] = newConfig[propertie];
-		}
+	for (var propertie in newConfig) {
+		config[propertie] = newConfig[propertie];
 	}
 
-	QuickDrive.getSheetNewDocument = function (json) {
+	QuickDrive.getSheetNewDocument = function () {
 		var templateFile = DriveApp.getFileById(config.templateId);
 		var newFile = templateFile.makeCopy(config.newDocumentName, DriveApp.getFolderById(config.folderId));
 
@@ -160,11 +158,12 @@ var QuickDrive = (function (config) {
 	};
 
 	return QuickDrive;
-})({}, {});
+};
 
 function doPost(e) {
 	var json = e ? JSON.parse(e.parameters.data[0]) : {};
 	var config = e ? (e.parameters.config ? JSON.parse(e.parameters.config[0]) : {}) : {};
+	var QuickDrive = new QuickDrive(DriveApp, SpreadsheetApp, config);
 	var newSpreadSheet = QuickDrive.getSheetNewDocument(json);
 	var sheet = newSpreadSheet.sheet;
 
