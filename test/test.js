@@ -1,8 +1,13 @@
-var DriveApp = require('./mock/DriveAppMock.js').DriveAppMock.DriveApp;
-var QuickDrive = require('../src/SheetsTemplater.gs').QuickDrive(DriveApp());
-var assert = require('chai').assert;
+evar DriveAppMock = require('./mock/DriveAppMock.js').DriveAppMock;
+var DriveApp = DriveAppMock.DriveApp;
+var SpreadsheetApp = DriveAppMock.SpreadsheetApp;
+var QuickDriveConstructor = require('../src/SheetsTemplater.gs').QuickDrive;
+var QuickDrive = QuickDriveConstructor(DriveApp(), SpreadsheetApp());
+var chai = require('chai');
+var assert = chai.assert;
+var expect = chai.expect;
 
-describe('QuickDrive', function () {
+describe('QuickDrive functions', function () {
 	describe('getAnnotationType', function () {
 		it('it should return none annotation, just simple text', function () {
 			assert.equal(QuickDrive.annotationFunctions.NONE, QuickDrive.getAnnotationType('==simple text with no annotation=='));
@@ -30,9 +35,62 @@ describe('QuickDrive', function () {
 			assert.equal(QuickDrive.annotationFunctions.FOR_EACH, QuickDrive.getAnnotationType('{~foo.bar.with.many.properties.myList}'));
 		});
 	});
-	describe('merge configs', function () {
-		it('it should keep default config', function () {
-			var config = QuickDrive.confi
+	describe('validateConfig', function () {
+		var createQuickDriveWithConfig = function (propertie, value) {
+			var obj = {};
+			obj[propertie] = value;
+			return function () {
+				QuickDriveConstructor(DriveApp(), SpreadsheetApp(), obj);
+			};
+		};
+		it('it should have default config with no error', function () {
+			QuickDriveConstructor(DriveApp(), QuickDrive._config);
+		});
+		it('it should validate fileId', function () {
+			assert.throws(createQuickDriveWithConfig('templateId', 'myshortid'), Error, 'invalid-file-id');
+			assert.throws(createQuickDriveWithConfig('templateId', 2313123), Error, 'invalid-file-id');
+			assert.throws(createQuickDriveWithConfig('templateId', true), Error, 'invalid-file-id');
+			createQuickDriveWithConfig('fileId', '123456789012345678901234567890123456789012345')();
+		});
+		it('it should validate folderId', function () {
+			assert.throws(createQuickDriveWithConfig('folderId', 'myshortid'), Error, 'invalid-folder-id');
+			assert.throws(createQuickDriveWithConfig('folderId', 2313123), Error, 'invalid-folder-id');
+			assert.throws(createQuickDriveWithConfig('folderId', true), Error, 'invalid-folder-id');
+			createQuickDriveWithConfig('folderId', '123456789012345678')();
+		});
+		it('it should validate file name', function () {
+			assert.throws(createQuickDriveWithConfig('newDocumentName', 2313123), Error, 'invalid-file-name');
+			assert.throws(createQuickDriveWithConfig('newDocumentName', true), Error, 'invalid-file-name');
+			createQuickDriveWithConfig('newDocumentName', 'my new name')();
+		});
+		it('it should validate stripe color', function () {
+			assert.throws(createQuickDriveWithConfig('stripeColor', 2313123), Error, 'invalid-stripe-color');
+			assert.throws(createQuickDriveWithConfig('stripeColor', true), Error, 'invalid-stripe-color');
+			assert.throws(createQuickDriveWithConfig('stripeColor', '#3333'), Error, 'invalid-stripe-color');
+			assert.throws(createQuickDriveWithConfig('stripeColor', '3333'), Error, 'invalid-stripe-color');
+			createQuickDriveWithConfig('stripeColor', '#333333')();
+			createQuickDriveWithConfig('stripeColor', '#333')();
+			createQuickDriveWithConfig('stripeColor', 'rgb(123,123,123)')();
+		});
+	});
+});
+
+var matrixMock = [
+	['asd', 'koko', '{=this.my_header}', 'my left header'],
+	['asd', 'koko', '{=this.my_header}', 'my left header'],
+	['asd', 'koko', '{=this.my_header}', 'my left header']
+];
+
+var jsonMock = {
+	this: {
+		my_header: 'header title'
+	}
+};
+describe('QuickDrive functions', function () {
+	describe('get new sheet', function () {
+		it('it should return sheet with text replaced', function () {
+			var QuickDriveMock = QuickDriveConstructor(DriveApp(), SpreadsheetApp(matrixMock));
+			var file = QuickDriveMock.processSheet(jsonMock);
 		});
 	});
 });

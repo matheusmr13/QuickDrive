@@ -36,7 +36,7 @@ var DriveApp = function () {
 		this.setName = function (newName) {
 			properties.name = newName;
 		};
-		this._setProperties = function(newProperties) {
+		this._setProperties = function (newProperties) {
 			for (var propertie in newProperties) {
 				properties[propertie] = newProperties[propertie];
 			}
@@ -67,17 +67,10 @@ var DriveApp = function () {
 	};
 };
 
-var SpreadsheetApp = function () {
-	var SpreadSheetMock = function (mySheets) {
-		var sheets = mySheets || [];
-
-		this.getSheets = function () {
-			return sheets;
-		};
+var SpreadsheetApp = function (mock) {
+	var SpreadSheetMock = function (mock) {
 		var SheetMock = function (myMatrix) {
-			var matrix = myMatrix || [
-				[]
-			];
+			var matrix = myMatrix;
 
 			var CellMock = function () {
 				var value = "";
@@ -95,7 +88,7 @@ var SpreadsheetApp = function () {
 					[]
 				];
 
-				this.getValues = function () {
+				this.getValues = function (row, col, lines, cols) {
 					var values = [];
 					for (var i = row; i < lines; i++) {
 						values[i] = [];
@@ -115,7 +108,7 @@ var SpreadsheetApp = function () {
 				};
 			};
 
-			SheetMock.getRange = function (row, col, lines, cols) {
+			this.getRange = function (row, col, lines, cols) {
 				var newMatrix = [
 					[]
 				];
@@ -127,12 +120,26 @@ var SpreadsheetApp = function () {
 				}
 				return new CellGroupMock(newMatrix);
 			};
+
+			this.getMaxRows = function () {
+				return matrix.length;
+			};
+
+			this.getMaxColumns = function () {
+				return matrix[0].length;
+			};
+		};
+
+		var sheets = [new SheetMock(mock)];
+
+		this.getSheets = function () {
+			return sheets;
 		};
 	};
 
 	return {
 		open: function (file) {
-			return new SpreadSheetMock();
+			return new SpreadSheetMock(mock);
 		}
 	}
 };

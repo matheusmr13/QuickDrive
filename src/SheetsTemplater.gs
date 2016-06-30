@@ -1,4 +1,4 @@
-var QuickDrive = function (DriveApp, newConfig) {
+var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 	var QuickDrive = {};
 
 	QuickDrive.annotationFunctions = {
@@ -12,7 +12,7 @@ var QuickDrive = function (DriveApp, newConfig) {
 		'=': QuickDrive.annotationFunctions.REPLACE_TEXT,
 		'~': QuickDrive.annotationFunctions.FOR_EACH
 	};
-	this.config = {
+	this._config = {
 		folderId: '0ByQE0cDEoa0qLUlPU21xVzNqZVk',
 		templateId: '1stc2xmCa3QB61bTR52tomteWUOwlVZ4s8OSKWG5dP_8',
 		newDocumentName: 'My new sheet',
@@ -23,16 +23,40 @@ var QuickDrive = function (DriveApp, newConfig) {
 			permission: DriveApp.Permission.VIEW
 		}]
 	};
-	for (var propertie in newConfig) {
-		config[propertie] = newConfig[propertie];
+	var validateConfig = function (config) {
+		if (config.folderId && (typeof config.folderId != 'string' || config.folderId.length != 18)) {
+			throw new Error('invalid-folder-id');
+		}
+
+		if (config.templateId && (typeof config.templateId != 'string' || config.templateId.length != 45)) {
+			throw new Error('invalid-file-id');
+		}
+
+		if (config.newDocumentName && (typeof config.newDocumentName != 'string')) {
+			throw new Error('invalid-file-name');
+		}
+
+		if (config.stripeColor && (typeof config.stripeColor != 'string' ||
+			(config.stripeColor[0] == '#' && (config.stripeColor.length != 4 && config.stripeColor.length != 7) ||
+			(config.stripeColor[0] != '#' && !(config.stripeColor[0] == 'r' && config.stripeColor[1] == 'g' && config.stripeColor[2] == 'b'))
+			))) {
+			throw new Error('invalid-stripe-color');
+		}
+	};
+
+	if (newConfig) {
+		validateConfig(newConfig);
+		for (var propertie in newConfig) {
+			this._config[propertie] = newConfig[propertie];
+		}
 	}
 
 	QuickDrive.getSheetNewDocument = function () {
-		var templateFile = DriveApp.getFileById(config.templateId);
-		var newFile = templateFile.makeCopy(config.newDocumentName, DriveApp.getFolderById(config.folderId));
+		var templateFile = DriveApp.getFileById(_config.templateId);
+		var newFile = templateFile.makeCopy(_config.newDocumentName, DriveApp.getFolderById(_config.folderId));
 
-		for (var i = 0; i < config.permissions.length; i++) {
-			newFile.setSharing(config.permissions[i].access, config.permissions[i].permission);
+		for (var i = 0; i < _config.permissions.length; i++) {
+			newFile.setSharing(_config.permissions[i].access, _config.permissions[i].permission);
 		}
 
 		var ss = SpreadsheetApp.open(newFile);
@@ -157,6 +181,28 @@ var QuickDrive = function (DriveApp, newConfig) {
 		var annotationFunction = QuickDrive.getAnnotationType(cellValue)(properties);
 	};
 
+	QuickDrive.processSheet = function(json) {
+		var newSpreadSheet = QuickDrive.getSheetNewDocument();
+		var sheet = newSpreadSheet.sheet;
+		var range = sheet.getRange(1, 1, sheet.getMaxRows(), sheet.getMaxColumns());
+		var values = range.getValues();
+		var myThis = {};
+		myThis['this'] = json;
+		var properties = {
+			sheet: sheet,
+			json: myThis,
+			values: values,
+			i: 0,
+			j: 0
+		};
+		for (properties.i = 0; properties.i < properties.values.length; properties.i++) {
+			for (properties.j = 0; properties.j < properties.values[properties.i].length; properties.j++) {
+				QuickDrive.processCell(properties);
+			}
+		}
+		return newSpreadSheet;
+	};
+
 	return QuickDrive;
 };
 
@@ -164,28 +210,8 @@ function doPost(e) {
 	var json = e ? JSON.parse(e.parameters.data[0]) : {};
 	var config = e ? (e.parameters.config ? JSON.parse(e.parameters.config[0]) : {}) : {};
 	var QuickDrive = new QuickDrive(DriveApp, SpreadsheetApp, config);
-	var newSpreadSheet = QuickDrive.getSheetNewDocument(json);
-	var sheet = newSpreadSheet.sheet;
-
-	var range = sheet.getRange(1, 1, sheet.getMaxRows(), sheet.getMaxColumns());
-	var values = range.getValues();
-	var myThis = {};
-	myThis['this'] = json;
-	var properties = {
-		sheet: sheet,
-		json: myThis,
-		values: values,
-		i: 0,
-		j: 0
-	};
-	QuickDrive.setConfigs(config);
-	for (properties.i = 0; properties.i < properties.values.length; properties.i++) {
-		for (properties.j = 0; properties.j < properties.values[properties.i].length; properties.j++) {
-			QuickDrive.processCell(properties);
-		}
-	}
-
-	return ContentService.createTextOutput(newSpreadSheet.fileId);
+	var newFile = QuickDrive.processSheet(json);
+	return ContentService.createTextOutput(newFile.fileId);
 };
 
 if (typeof module !== 'undefined' && module.exports != null) {
