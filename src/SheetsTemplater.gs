@@ -1,6 +1,5 @@
 var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 	var QuickDrive = {};
-
 	QuickDrive.annotationFunctions = {
 		REPLACE_TEXT: replaceValue,
 		FOR_EACH: processForEach,

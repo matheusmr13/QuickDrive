@@ -1,6 +1,5 @@
-var mock = require('./mock/DriveAppMock.js').DriveAppMock;
-var SpreadsheetApp = mock.SpreadsheetApp();
-var DriveApp = mock.DriveApp();
+var SpreadsheetApp = require('./mock/Spreadsheet.js').Spreadsheet();
+var DriveApp = require('./mock/DriveApp.js').DriveApp();
 var assert = require('chai').assert;
 
 describe('DriveApp sheet mock test', function () {

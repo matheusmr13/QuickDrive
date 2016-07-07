@@ -1,6 +1,6 @@
-evar DriveAppMock = require('./mock/DriveAppMock.js').DriveAppMock;
-var DriveApp = DriveAppMock.DriveApp;
-var SpreadsheetApp = DriveAppMock.SpreadsheetApp;
+var DriveApp = require('./mock/DriveApp.js').DriveApp;
+var Cell = require('./mock/Cell.js').Cell;
+var SpreadsheetApp = require('./mock/SpreadsheetApp.js').SpreadsheetApp;
 var QuickDriveConstructor = require('../src/SheetsTemplater.gs').QuickDrive;
 var QuickDrive = QuickDriveConstructor(DriveApp(), SpreadsheetApp());
 var chai = require('chai');
@@ -76,21 +76,20 @@ describe('QuickDrive functions', function () {
 });
 
 var matrixMock = [
-	['asd', 'koko', '{=this.my_header}', 'my left header'],
-	['asd', 'koko', '{=this.my_header}', 'my left header'],
-	['asd', 'koko', '{=this.my_header}', 'my left header']
+	[new Cell('asd'), new Cell('koko'), new Cell('{=this.my_header}'), new Cell('my left header')],
+	[new Cell('asd'), new Cell('koko'), new Cell('{=this.my_header}'), new Cell('my left header')],
+	[new Cell('asd'), new Cell('koko'), new Cell('{=this.my_header}'), new Cell('my left header')]
 ];
 
 var jsonMock = {
-	this: {
-		my_header: 'header title'
-	}
+	my_header: 'header title'
 };
 describe('QuickDrive functions', function () {
 	describe('get new sheet', function () {
 		it('it should return sheet with text replaced', function () {
 			var QuickDriveMock = QuickDriveConstructor(DriveApp(), SpreadsheetApp(matrixMock));
 			var file = QuickDriveMock.processSheet(jsonMock);
+			console.info(file.sheet.getRange(1,1,3,4).getValues());
 		});
 	});
 });

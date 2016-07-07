@@ -9,11 +9,13 @@
     "url": "git@github.com:matheusmr13/quickdrive.git"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "update": "gapps upload"
   },
   "dependencies": {
     "chai": "^3.5.0",
-    "mocha": "^2.5.3"
+    "mocha": "^2.5.3",
+    "node-google-apps-script": "^1.1.5"
   },
   "devDependencies": {}
 }
