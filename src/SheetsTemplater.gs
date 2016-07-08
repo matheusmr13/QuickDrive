@@ -147,17 +147,16 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 		sheet.getRange(endLine + 1, initialColumn + 1).setValue('');
 		sheet.getRange(endLine + 1, endColumn + 1).setValue('');
 		properties.values = sheet.getRange(1, 1, sheet.getMaxRows(), sheet.getMaxColumns()).getValues();
-
 		for (var i = initialLine + 1, index = 0; i < endLine + 2; i++, index++) {
-			for (var j = initialColumn + 2; j < endColumn; j++) {
+			for (var j = initialColumn + 2; j < endColumn + 1; j++) {
 				properties.i = i - 1;
 				properties.j = j - 1;
 				properties.json[entityName] = array[index];
 				QuickDrive.processCell(properties);
 
 			}
-			if (config.stripeFirst == !(index % 2)) {
-				sheet.getRange(i, 1, 1, sheet.getMaxColumns()).setBackground(config.stripeColor);
+			if (_config.stripeFirst == !(index % 2)) {
+				sheet.getRange(i, 1, 1, sheet.getMaxColumns()).setBackground(_config.stripeColor);
 			}
 		}
 

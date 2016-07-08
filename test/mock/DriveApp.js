@@ -1,5 +1,5 @@
-var File = require('./File.js').File;
-var Folder = require('./Folder.js').Folder;
+var File = require('./DriveApp/File.js').File;
+var Folder = require('./DriveApp/Folder.js').Folder;
 
 var DriveApp = function () {
 	return {

@@ -1,4 +1,4 @@
-var SpreadsheetApp = require('./mock/Spreadsheet.js').Spreadsheet();
+var SpreadsheetApp = require('./mock/SpreadsheetApp.js').SpreadsheetApp();
 var DriveApp = require('./mock/DriveApp.js').DriveApp();
 var assert = require('chai').assert;
 
