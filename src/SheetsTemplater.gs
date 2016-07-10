@@ -1,6 +1,5 @@
 var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
-	var QuickDrive = {};
-	QuickDrive.annotationFunctions = {
+	var annotationFunctions = {
 		REPLACE_TEXT: replaceValue,
 		FOR_EACH: processForEach,
 		INSERT_FORMULA: insertFormula,
@@ -8,14 +7,15 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 			return;
 		}
 	};
+	this.annotationFunctions = annotationFunctions;
 	var annotationType = {
-		'=': QuickDrive.annotationFunctions.REPLACE_TEXT,
-		'~': QuickDrive.annotationFunctions.FOR_EACH,
-		'#': QuickDrive.annotationFunctions.INSERT_FORMULA
+		'=': annotationFunctions.REPLACE_TEXT,
+		'~': annotationFunctions.FOR_EACH,
+		'#': annotationFunctions.INSERT_FORMULA
 	};
-	this._config = {
-		folderId: '0ByQE0cDEoa0qLUlPU21xVzNqZVk',
-		templateId: '1stc2xmCa3QB61bTR52tomteWUOwlVZ4s8OSKWG5dP_8',
+	var _config = {
+		folderId: '0B8cJhvYlR-sCcGR4d3VYWGZaYWM',
+		templateId: '1l7sMxfD-qh4sbeu6Ax0z6v84YdahXDTG8hlPcE_vkEo',
 		newDocumentName: 'My new sheet',
 		stripeColor: '#EEEEEE',
 		stripeFirst: false,
@@ -24,6 +24,7 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 			permission: DriveApp.Permission.VIEW
 		}]
 	};
+	this._config = _config;
 	var validateConfig = function (config) {
 		if (config.folderId && (typeof config.folderId != 'string' || config.folderId.length != 18)) {
 			throw new Error('invalid-folder-id');
@@ -38,9 +39,9 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 		}
 
 		if (config.stripeColor && (typeof config.stripeColor != 'string' ||
-			(config.stripeColor[0] == '#' && (config.stripeColor.length != 4 && config.stripeColor.length != 7) ||
-			(config.stripeColor[0] != '#' && !(config.stripeColor[0] == 'r' && config.stripeColor[1] == 'g' && config.stripeColor[2] == 'b'))
-			))) {
+				(config.stripeColor[0] == '#' && (config.stripeColor.length != 4 && config.stripeColor.length != 7) ||
+					(config.stripeColor[0] != '#' && !(config.stripeColor[0] == 'r' && config.stripeColor[1] == 'g' && config.stripeColor[2] == 'b'))
+				))) {
 			throw new Error('invalid-stripe-color');
 		}
 	};
@@ -48,11 +49,11 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 	if (newConfig) {
 		validateConfig(newConfig);
 		for (var propertie in newConfig) {
-			this._config[propertie] = newConfig[propertie];
+			_config[propertie] = newConfig[propertie];
 		}
 	}
 
-	QuickDrive.getSheetNewDocument = function () {
+	var getSheetNewDocument = function () {
 		var templateFile = DriveApp.getFileById(_config.templateId);
 		var newFile = templateFile.makeCopy(_config.newDocumentName, DriveApp.getFolderById(_config.folderId));
 
@@ -66,6 +67,7 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 			fileId: newFile.getId()
 		};
 	};
+	this.getSheetNewDocument = getSheetNewDocument;
 
 	function isAnottation(text) {
 		return text[0] == '{' && text[text.length - 1] == '}';
@@ -90,18 +92,19 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 		return true;
 	};
 
-	QuickDrive.getAnnotationType = function (text) {
+	var getAnnotationType = function (text) {
 
 		if (isAnottation(text)) {
 			if (isValidAnnotation(text.split(':')[0])) {
-				return annotationType[text[1]] || QuickDrive.annotationFunctions.NONE;
+				return annotationType[text[1]] || annotationFunctions.NONE;
 			} else {
-				return QuickDrive.annotationFunctions.NONE;
+				return annotationFunctions.NONE;
 			}
 		} else {
-			return QuickDrive.annotationFunctions.NONE;
+			return annotationFunctions.NONE;
 		}
 	};
+	this.getAnnotationType = getAnnotationType;
 
 	var getValueOnJson = function (jsonObject, path) {
 		var pathSplit = path.split('.');
@@ -154,7 +157,7 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 				properties.i = i - 1;
 				properties.j = j - 1;
 				properties.json[entityName] = array[index];
-				QuickDrive.processCell(properties);
+				processCell(properties);
 
 			}
 			if (_config.stripeFirst == !(index % 2)) {
@@ -176,7 +179,7 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 		sheet.getRange(row, col).setValue(getValueOnJson(json, command.substring(2, command.length - 1)));
 	};
 
-	function insertFormula (properties) {
+	function insertFormula(properties) {
 		var row = properties.i + 1,
 			col = properties.j + 1,
 			command = properties.values[properties.i][properties.j],
@@ -185,13 +188,14 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 		sheet.getRange(row, col).setFormula('=' + getValueOnJson(json, command.substring(2, command.length - 1)));
 	};
 
-	QuickDrive.processCell = function (properties) {
+	var processCell = function (properties) {
 		var cellValue = properties.values[properties.i][properties.j];
-		var annotationFunction = QuickDrive.getAnnotationType(cellValue)(properties);
+		var annotationFunction = getAnnotationType(cellValue)(properties);
 	};
 
-	QuickDrive.processSheet = function(json) {
-		var newSpreadSheet = QuickDrive.getSheetNewDocument();
+	this.processSheet = function (json) {
+
+		var newSpreadSheet = getSheetNewDocument();
 		var sheet = newSpreadSheet.sheet;
 		var range = sheet.getRange(1, 1, sheet.getMaxRows(), sheet.getMaxColumns());
 		var values = range.getValues();
@@ -206,20 +210,18 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 		};
 		for (properties.i = 0; properties.i < properties.values.length; properties.i++) {
 			for (properties.j = 0; properties.j < properties.values[properties.i].length; properties.j++) {
-				QuickDrive.processCell(properties);
+				processCell(properties);
 			}
 		}
 		return newSpreadSheet;
 	};
-
-	return QuickDrive;
 };
 
 function doPost(e) {
 	var json = e ? JSON.parse(e.parameters.data[0]) : {};
 	var config = e ? (e.parameters.config ? JSON.parse(e.parameters.config[0]) : {}) : {};
-	var QuickDrive = new QuickDrive(DriveApp, SpreadsheetApp, config);
-	var newFile = QuickDrive.processSheet(json);
+	var QuickDriveObj = new QuickDrive(DriveApp, SpreadsheetApp, config);
+	var newFile = QuickDriveObj.processSheet(json);
 	return ContentService.createTextOutput(newFile.fileId);
 };
 

@@ -2,7 +2,7 @@ var DriveApp = require('./mock/DriveApp.js').DriveApp;
 var Cell = require('./mock/SpreadsheetApp/Cell.js').Cell;
 var SpreadsheetApp = require('./mock/SpreadsheetApp.js').SpreadsheetApp;
 var QuickDriveConstructor = require('../src/SheetsTemplater.gs').QuickDrive;
-var QuickDrive = QuickDriveConstructor(DriveApp(), SpreadsheetApp());
+var QuickDrive = new QuickDriveConstructor(DriveApp(), SpreadsheetApp());
 var chai = require('chai');
 var assert = chai.assert;
 var expect = chai.expect;
@@ -123,7 +123,7 @@ var jsonMock = {
 describe('QuickDrive functions', function () {
 	describe('get new sheet', function () {
 		it('it should return sheet with text replaced', function () {
-			var QuickDriveMock = QuickDriveConstructor(DriveApp(), SpreadsheetApp(matrixMockWithReplaceAnnotations));
+			var QuickDriveMock = new QuickDriveConstructor(DriveApp(), SpreadsheetApp(matrixMockWithReplaceAnnotations));
 			var file = QuickDriveMock.processSheet(jsonMock);
 			assert.equal(JSON.stringify([
 				['My cool header', 'My random text', 'another random text', ''],
