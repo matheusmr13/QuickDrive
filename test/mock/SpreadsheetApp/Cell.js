@@ -1,5 +1,5 @@
 var Cell = function (firstValue) {
-	var value = firstValue || "",
+	var value = firstValue || '',
 		backgroundColor = 'white',
 		borderStyle = 'SOLID';
 
@@ -8,9 +8,13 @@ var Cell = function (firstValue) {
 	this.setValue = function (newValue) {
 		value = newValue;
 	};
+	this.setFormula = function (newValue) {
+		value = newValue;
+	};
 	this.getValue = function () {
 		return value;
 	};
+
 	this.setBackground = function(newBackground) {
 		backgroundColor = newBackground;
 	};

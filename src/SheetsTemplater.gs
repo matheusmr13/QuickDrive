@@ -3,13 +3,15 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 	QuickDrive.annotationFunctions = {
 		REPLACE_TEXT: replaceValue,
 		FOR_EACH: processForEach,
+		INSERT_FORMULA: insertFormula,
 		NONE: function (properties) {
 			return;
 		}
 	};
 	var annotationType = {
 		'=': QuickDrive.annotationFunctions.REPLACE_TEXT,
-		'~': QuickDrive.annotationFunctions.FOR_EACH
+		'~': QuickDrive.annotationFunctions.FOR_EACH,
+		'#': QuickDrive.annotationFunctions.INSERT_FORMULA
 	};
 	this._config = {
 		folderId: '0ByQE0cDEoa0qLUlPU21xVzNqZVk',
@@ -172,6 +174,15 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 			sheet = properties.sheet,
 			json = properties.json;
 		sheet.getRange(row, col).setValue(getValueOnJson(json, command.substring(2, command.length - 1)));
+	};
+
+	function insertFormula (properties) {
+		var row = properties.i + 1,
+			col = properties.j + 1,
+			command = properties.values[properties.i][properties.j],
+			sheet = properties.sheet,
+			json = properties.json;
+		sheet.getRange(row, col).setFormula('=' + getValueOnJson(json, command.substring(2, command.length - 1)));
 	};
 
 	QuickDrive.processCell = function (properties) {

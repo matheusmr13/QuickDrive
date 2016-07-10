@@ -21,6 +21,8 @@ var Range = function (myMatrix) {
 		}
 	};
 
+	this.setFormula = this.setValue;
+
 	this._getCells = function() {
 		return matrix;
 	};
