@@ -2,7 +2,7 @@ var DriveApp = require('./mock/DriveApp.js').DriveApp;
 var Cell = require('./mock/SpreadsheetApp/Cell.js').Cell;
 var SpreadsheetApp = require('./mock/SpreadsheetApp.js').SpreadsheetApp;
 var QuickDriveConstructor = require('../src/SheetsTemplater.gs').QuickDrive;
-var QuickDrive = QuickDriveConstructor(DriveApp(), SpreadsheetApp());
+var QuickDrive = new QuickDriveConstructor(DriveApp(), SpreadsheetApp());
 var chai = require('chai');
 var assert = chai.assert;
 var expect = chai.expect;
@@ -33,6 +33,11 @@ describe('QuickDrive functions', function () {
 			assert.equal(QuickDrive.annotationFunctions.FOR_EACH, QuickDrive.getAnnotationType('{~mylist}'));
 			assert.equal(QuickDrive.annotationFunctions.FOR_EACH, QuickDrive.getAnnotationType('{~foo.myList}'));
 			assert.equal(QuickDrive.annotationFunctions.FOR_EACH, QuickDrive.getAnnotationType('{~foo.bar.with.many.properties.myList}'));
+		});
+		it('it should insert formula annotation', function () {
+			assert.equal(QuickDrive.annotationFunctions.INSERT_FORMULA, QuickDrive.getAnnotationType('{#myFormula}'));
+			assert.equal(QuickDrive.annotationFunctions.INSERT_FORMULA, QuickDrive.getAnnotationType('{#my.formula}'));
+			assert.equal(QuickDrive.annotationFunctions.INSERT_FORMULA, QuickDrive.getAnnotationType('{#foo.bar.with.many.properties.myList}'));
 		});
 	});
 	describe('validateConfig', function () {
