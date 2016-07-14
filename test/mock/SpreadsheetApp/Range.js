@@ -13,16 +13,6 @@ var Range = function (myMatrix) {
 		return values;
 	};
 
-	this.setValue = function (value) {
-		for (var i = 0; i < matrix.length; i++) {
-			for (var j = 0; j < matrix.length; j++) {
-				matrix[i][j].setValue(value);
-			}
-		}
-	};
-
-	this.setFormula = this.setValue;
-
 	this._getCells = function() {
 		return matrix;
 	};
@@ -40,9 +30,30 @@ var Range = function (myMatrix) {
 	};
 
 	this.setBackground = function (background) {
+		setSomeValue(background, 'Background');
+	};
+	this.setValue = function (value) {
+		setSomeValue(value, 'Value');
+	};
+	this.setFormula = function (formula) {
+		setSomeValue(formula, 'Formula');
+	};
+	this.setTextSize = function (textSize) {
+		setSomeValue(textSize, 'TextSize');
+	};
+	this.setColor = function (color) {
+		setSomeValue(color, 'Color');
+	};
+	this.setBorderStyle = function (borderStyle) {
+		setSomeValue(borderStyle, 'BorderStyle');
+	};
+	this.setBorderColor = function (borderColor) {
+		setSomeValue(borderColor, 'BorderColor');
+	};
+	var setSomeValue = function(value, propertie) {
 		for (var i = 0; i < matrix.length; i++) {
 			for (var j = 0; j < matrix[0].length; j++) {
-				matrix[i][j].setBackground(background);
+				matrix[i][j]['set' + propertie](value);
 			}
 		}
 	};

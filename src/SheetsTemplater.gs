@@ -3,6 +3,7 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 		REPLACE_TEXT: replaceValue,
 		FOR_EACH: processForEach,
 		INSERT_FORMULA: insertFormula,
+		COMPLETE_CELL: completeCell,
 		NONE: function (properties) {
 			return;
 		}
@@ -11,7 +12,9 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 	var annotationType = {
 		'=': annotationFunctions.REPLACE_TEXT,
 		'~': annotationFunctions.FOR_EACH,
-		'#': annotationFunctions.INSERT_FORMULA
+		'#': annotationFunctions.INSERT_FORMULA,
+		'*': annotationFunctions.COMPLETE_CELL
+
 	};
 	var _config = {
 		folderId: '0B8cJhvYlR-sCcGR4d3VYWGZaYWM',
@@ -177,6 +180,32 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 			sheet = properties.sheet,
 			json = properties.json;
 		sheet.getRange(row, col).setValue(getValueOnJson(json, command.substring(2, command.length - 1)));
+	};
+
+	function completeCell(properties) {
+		var row = properties.i + 1,
+			col = properties.j + 1,
+			command = properties.values[properties.i][properties.j],
+			sheet = properties.sheet,
+			json = properties.json,
+			cellProperties = getValueOnJson(json, command.substring(2, command.length - 1)),
+			range = sheet.getRange(row, col);
+		range.setValue(cellProperties.value);
+		if (cellProperties.backgroundColor) {
+			range.setBackground(cellProperties.backgroundColor);
+		}
+		if (cellProperties.textSize) {
+			range.setTextSize(cellProperties.textSize);
+		}
+		if (cellProperties.color) {
+			range.setColor(cellProperties.color);
+		}
+		if (cellProperties.borderStyle) {
+			range.setBorderStyle(cellProperties.borderStyle);
+		}
+		if (cellProperties.borderColor) {
+			range.setBorderColor(cellProperties.borderColor);
+		}
 	};
 
 	function insertFormula(properties) {

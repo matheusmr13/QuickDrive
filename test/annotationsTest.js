@@ -38,34 +38,35 @@ var jsonMock = {
 		}
 	}
 };
+
 describe('QuickDrive functions', function () {
 	describe('get new sheet', function () {
 		it('it should return sheet with text replaced', function () {
-			var QuickDriveMock = QuickDriveConstructor(DriveApp(), SpreadsheetApp(matrixMockWithReplaceAnnotations));
+			var QuickDriveMock = new QuickDriveConstructor(DriveApp(), SpreadsheetApp(matrixMockWithReplaceAnnotations));
 			var file = QuickDriveMock.processSheet(jsonMock);
 			var range = file.sheet.getRange(1,1,2,2).getCells();
 			var firstCell = range[0][0];
 			var secondCell = range[0][1];
 			var thirdCell = range[1][0];
-			assert.equal('the value', firstCell.getValue());
-			assert.equal('rgb(100,100,100)', firstCell.getBackgroundColor());
+			assert.equal('The value', firstCell.getValue());
+			assert.equal('rgb(100,100,100)', firstCell.getBackground());
 			assert.equal('#F00', firstCell.getColor());
 			assert.equal(23, firstCell.getTextSize());
 			assert.equal('DOTTED', firstCell.getBorderStyle());
 			assert.equal('#00F', firstCell.getBorderColor());
 
 			assert.equal('my second value', secondCell.getValue());
-			assert.equal('default', secondCell.getBackgroundColor());
+			assert.equal('default', secondCell.getBackground());
 			assert.equal('#F00', secondCell.getColor());
 			assert.equal('default', secondCell.getTextSize());
-			assert.equal('SOLID', secondCell.getBorderStyle());
+			assert.equal('default', secondCell.getBorderStyle());
 			assert.equal('#00F', secondCell.getBorderColor());
 
 			assert.equal('', thirdCell.getValue());
-			assert.equal('default', thirdCell.getBackgroundColor());
+			assert.equal('default', thirdCell.getBackground());
 			assert.equal('default', thirdCell.getColor());
 			assert.equal(10, thirdCell.getTextSize());
-			assert.equal('SOLID', thirdCell.getBorderStyle());
+			assert.equal('default', thirdCell.getBorderStyle());
 			assert.equal('#00F', thirdCell.getBorderColor());
 		});
 	});
