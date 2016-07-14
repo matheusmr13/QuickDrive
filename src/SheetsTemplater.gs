@@ -152,6 +152,7 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 				properties.i = i - 1;
 				properties.j = j - 1;
 				properties.json[entityName] = array[index];
+				console.info(properties.json[entityName]);
 				QuickDrive.processCell(properties);
 
 			}
@@ -175,6 +176,7 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 	};
 
 	QuickDrive.processCell = function (properties) {
+		console.info('  ' + properties.i + ' ' +properties.j);
 		var cellValue = properties.values[properties.i][properties.j];
 		var annotationFunction = QuickDrive.getAnnotationType(cellValue)(properties);
 	};

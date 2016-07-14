@@ -16,6 +16,7 @@ var Sheet = function (myMatrix) {
 				});
 			}
 		}
+
 	};
 
 	setupMatrixLinks();
@@ -67,7 +68,6 @@ var Sheet = function (myMatrix) {
 		// console.info(newMatrix.length);
 		// console.info(newMatrix[0].length);
 		matrix = newMatrix;
-		setupMatrixLinks();
 	};
 
 	this.getMaxRows = function () {

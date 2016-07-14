@@ -44,6 +44,10 @@ var Range = function (myMatrix) {
 			}
 		}
 	};
+
+	this.getCells = function() {
+		return matrix;
+	};
 };
 
 exports.Range = Range;
