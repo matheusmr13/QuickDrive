@@ -39,12 +39,12 @@ var jsonMock = {
 	}
 };
 
-describe('QuickDrive functions', function () {
-	describe('get new sheet', function () {
-		it('it should return sheet with text replaced', function () {
+describe('Annotations tests', function () {
+	describe('test specific annotations', function () {
+		it('all properties annotation', function () {
 			var QuickDriveMock = new QuickDriveConstructor(DriveApp(), SpreadsheetApp(matrixMockWithReplaceAnnotations));
 			var file = QuickDriveMock.processSheet(jsonMock);
-			var range = file.sheet.getRange(1,1,2,2).getCells();
+			var range = file.sheet._processFormulas().getRange(1,1,2,2).getCells();
 			var firstCell = range[0][0];
 			var secondCell = range[0][1];
 			var thirdCell = range[1][0];

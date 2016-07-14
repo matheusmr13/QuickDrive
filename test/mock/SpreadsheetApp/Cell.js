@@ -1,5 +1,6 @@
 var Cell = function (firstValue) {
 	var value = firstValue || '',
+		formula = '',
 		backgroundColor = 'default',
 		borderStyle = 'default',
 		color = 'default',
@@ -9,13 +10,24 @@ var Cell = function (firstValue) {
 	var links = {};
 
 	this.getValue = function () {
-		return value;
+		return value + '';
+	};
+	this.getNumberValue = function() {
+		if (isNaN(value)) {
+			return 0;
+		} else {
+			return parseInt(value || 0);
+		}
 	};
 	this.setValue = function (newValue) {
 		value = newValue;
 	};
-	this.setFormula = function (newValue) {
-		value = newValue;
+	this.getFormula = function () {
+		return formula;
+	};
+	this.setFormula = function (newFormula) {
+		value = '';
+		formula = newFormula;
 	};
 	this.getBackground = function () {
 		return backgroundColor;

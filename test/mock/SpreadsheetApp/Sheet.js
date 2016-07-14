@@ -1,5 +1,6 @@
 var Range = require('./Range').Range;
 var Cell = require('./Cell').Cell;
+var Formulas = require('./Formulas').Formulas;
 var Sheet = function (myMatrix) {
 	var matrix = myMatrix || [
 		[]
@@ -58,15 +59,6 @@ var Sheet = function (myMatrix) {
 			newMatrix.push(matrix[i]);
 		}
 
-		// for (var i =0; i < newMatrix.length;i++) {
-		// 	var a = '';
-		// 	for(var j =0;j < newMatrix[i].length;j++) {
-		// 		a = a + '    ' + newMatrix[i][j].getValue();
-		// 	}
-		// 	console.info(a);
-		// }
-		// console.info(newMatrix.length);
-		// console.info(newMatrix[0].length);
 		matrix = newMatrix;
 	};
 
@@ -76,6 +68,32 @@ var Sheet = function (myMatrix) {
 
 	this.getMaxColumns = function () {
 		return matrix[0].length;
+	};
+
+	this._processFormula = function (cell, formulas) {
+		if (cell.getFormula() && !cell.getValue()) {
+			cell.setFormula(cell.getFormula().trim());
+			var parts = cell.getFormula().split('('),
+				formula = parts[0].substring(1),
+				params = parts[1].substring(0, parts[1].length - 1).split(','),
+				formulaFunction = formulas[formula];
+				console.info(parts);
+			if (!formulaFunction) {
+				throw new Error('Not testable function: ' + formula);
+			} else {
+				cell.setValue(formulaFunction(params));
+			}
+		}
+	};
+
+	this._processFormulas = function () {
+		var formulas = Formulas(this);
+		for (var i = 0; i < matrix.length; i++) {
+			for (var j = 0; j < matrix[i].length; j++) {
+				this._processFormula(matrix[i][j], formulas);
+			}
+		}
+		return this;
 	};
 };
 

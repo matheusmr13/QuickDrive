@@ -54,16 +54,16 @@ describe('QuickDrive functions', function () {
 			var file = QuickDriveMock.processSheet(jsonMock);
 			assert.equal(JSON.stringify([
 				['My cool header', 'My random text', 'another random text', ''],
-				['Matheus', 'Martins do Rego', 20, 'My user'],
+				['Matheus', 'Martins do Rego', '20', 'My user'],
 				['12345-678', 'Campinas', 'São Paulo', 'Brasil'],
-				['=SUM(10,30)', '','',''],
+				['40', '','',''],
 				['Languages that he likes', '', '', ''],
 				['', 'Java', '', ''],
 				['', 'JavaScript', '', ''],
 				['', 'CSS', '', ''],
 				['', 'HTML', '', ''],
 				['', 'Python', '', 'text that will stay on last line']
-			]), JSON.stringify(file.sheet.getRange(1, 1, file.sheet.getMaxRows(), file.sheet.getMaxColumns()).getValues()));
+			]), JSON.stringify(file.sheet._processFormulas().getRange(1, 1, file.sheet.getMaxRows(), file.sheet.getMaxColumns()).getValues()));
 		});
 	});
 });
