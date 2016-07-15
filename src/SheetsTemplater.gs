@@ -190,7 +190,9 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 			json = properties.json,
 			cellProperties = getValueOnJson(json, command.substring(2, command.length - 1)),
 			range = sheet.getRange(row, col);
-		range.setValue(cellProperties.value);
+		if (cellProperties.value) {
+			range.setValue(cellProperties.value);
+		}
 		if (cellProperties.backgroundColor) {
 			range.setBackground(cellProperties.backgroundColor);
 		}
@@ -202,6 +204,9 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 		}
 		if (cellProperties.borderStyle && cellProperties.borderColor) {
 			range.setBorder(true, true, true, true, true, true, cellProperties.borderColor, SpreadsheetApp.BorderStyle[cellProperties.borderStyle]);
+		}
+		if (cellProperties.rowSpan) {
+			sheet.getRange(row, col, 1, parseInt(cellProperties.rowSpan, 10)).merge();
 		}
 	};
 
