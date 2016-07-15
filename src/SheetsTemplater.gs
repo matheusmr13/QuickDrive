@@ -201,7 +201,7 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 			range.setFontColor(cellProperties.fontColor);
 		}
 		if (cellProperties.borderStyle && cellProperties.borderColor) {
-			range.setBorder(true, true, true, true, cellProperties.borderColor, SpreadsheetApp.BorderStyle[cellProperties.borderStyle]);
+			range.setBorder(true, true, true, true, true, true, cellProperties.borderColor, SpreadsheetApp.BorderStyle[cellProperties.borderStyle]);
 		}
 	};
 

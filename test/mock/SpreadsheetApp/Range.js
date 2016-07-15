@@ -44,7 +44,7 @@ var Range = function (myMatrix) {
 	this.setFontColor = function (color) {
 		setSomeValue(color, 'FontColor');
 	};
-	this.setBorder = function (top, left, bottom, right, color, style) {
+	this.setBorder = function (top, left, bottom, right, vertical, horizontal, color, style) {
 		setSomeValue(color, 'BorderColor');
 		setSomeValue(style, 'BorderStyle');
 	};
