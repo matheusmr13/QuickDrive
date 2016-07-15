@@ -77,7 +77,6 @@ var Sheet = function (myMatrix) {
 				formula = parts[0].substring(1),
 				params = parts[1].substring(0, parts[1].length - 1).split(','),
 				formulaFunction = formulas[formula];
-				console.info(parts);
 			if (!formulaFunction) {
 				throw new Error('Not testable function: ' + formula);
 			} else {

@@ -3,8 +3,8 @@ var Cell = function (firstValue) {
 		formula = '',
 		backgroundColor = 'default',
 		borderStyle = 'default',
-		color = 'default',
-		textSize = 'default',
+		fontColor = 'default',
+		fontSize = 'default',
 		borderColor = 'default';
 
 	var links = {};
@@ -47,17 +47,17 @@ var Cell = function (firstValue) {
 	this.setBorderStyle = function (newBorderStyle) {
 		borderStyle = newBorderStyle;
 	};
-	this.getColor = function () {
-		return color;
+	this.getFontColor = function () {
+		return fontColor;
 	};
-	this.setColor = function (newColor) {
-		color = newColor;
+	this.setFontColor = function (newFontColor) {
+		fontColor = newFontColor;
 	};
-	this.getTextSize = function () {
-		return textSize;
+	this.getFontSize = function () {
+		return fontSize;
 	};
-	this.setTextSize = function (newTextSize) {
-		textSize = newTextSize;
+	this.setFontSize = function (newFontSize) {
+		fontSize = newFontSize;
 	};
 	this._configureLinks = function (newLinks) {
 		links = newLinks;

@@ -1,8 +1,9 @@
 var DriveApp = require('./mock/DriveApp.js').DriveApp;
 var Cell = require('./mock/SpreadsheetApp/Cell.js').Cell;
+var Range = require('./mock/SpreadsheetApp/Range.js').Range;
 var SpreadsheetApp = require('./mock/SpreadsheetApp.js').SpreadsheetApp;
 var QuickDriveConstructor = require('../src/SheetsTemplater.gs').QuickDrive;
-var QuickDrive = QuickDriveConstructor(DriveApp(), SpreadsheetApp());
+var QuickDrive = QuickDriveConstructor(DriveApp(), SpreadsheetApp(), new Range());
 var chai = require('chai');
 var assert = chai.assert;
 var expect = chai.expect;
@@ -16,14 +17,14 @@ var jsonMock = {
 	propertyCell: {
 		value: 'The value',
 		backgroundColor: 'rgb(100,100,100)',
-		color: '#F00',
-		textSize: 23,
+		fontColor: '#F00',
+		fontSize: 23,
 		borderStyle: 'DOTTED',
-		borderColor: '#00F',
+		borderColor: '#00F'
 	},
 	anotherPropertyCell: {
 		value: 'my second value',
-		color: '#F00',
+		fontColor: '#F00',
 		borderColor: '#00F'
 	},
 	long: {
@@ -31,7 +32,7 @@ var jsonMock = {
 			reference: {
 				cell: {
 					value: '',
-					textSize: 10,
+					fontSize: 10,
 					borderColor: '#00F'
 				}
 			}
@@ -50,24 +51,24 @@ describe('Annotations tests', function () {
 			var thirdCell = range[1][0];
 			assert.equal('The value', firstCell.getValue());
 			assert.equal('rgb(100,100,100)', firstCell.getBackground());
-			assert.equal('#F00', firstCell.getColor());
-			assert.equal(23, firstCell.getTextSize());
+			assert.equal('#F00', firstCell.getFontColor());
+			assert.equal(23, firstCell.getFontSize());
 			assert.equal('DOTTED', firstCell.getBorderStyle());
 			assert.equal('#00F', firstCell.getBorderColor());
 
 			assert.equal('my second value', secondCell.getValue());
 			assert.equal('default', secondCell.getBackground());
-			assert.equal('#F00', secondCell.getColor());
-			assert.equal('default', secondCell.getTextSize());
+			assert.equal('#F00', secondCell.getFontColor());
+			assert.equal('default', secondCell.getFontSize());
 			assert.equal('default', secondCell.getBorderStyle());
-			assert.equal('#00F', secondCell.getBorderColor());
+			assert.equal('default', secondCell.getBorderColor());
 
 			assert.equal('', thirdCell.getValue());
 			assert.equal('default', thirdCell.getBackground());
-			assert.equal('default', thirdCell.getColor());
-			assert.equal(10, thirdCell.getTextSize());
+			assert.equal('default', thirdCell.getFontColor());
+			assert.equal(10, thirdCell.getFontSize());
 			assert.equal('default', thirdCell.getBorderStyle());
-			assert.equal('#00F', thirdCell.getBorderColor());
+			assert.equal('default', thirdCell.getBorderColor());
 		});
 	});
 });

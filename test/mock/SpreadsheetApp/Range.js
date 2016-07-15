@@ -13,7 +13,7 @@ var Range = function (myMatrix) {
 		return values;
 	};
 
-	this._getCells = function() {
+	this._getCells = function () {
 		return matrix;
 	};
 	this.copyTo = function (anotherRange) {
@@ -38,19 +38,17 @@ var Range = function (myMatrix) {
 	this.setFormula = function (formula) {
 		setSomeValue(formula, 'Formula');
 	};
-	this.setTextSize = function (textSize) {
-		setSomeValue(textSize, 'TextSize');
+	this.setFontSize = function (newFontSize) {
+		setSomeValue(newFontSize, 'FontSize');
 	};
-	this.setColor = function (color) {
-		setSomeValue(color, 'Color');
+	this.setFontColor = function (color) {
+		setSomeValue(color, 'FontColor');
 	};
-	this.setBorderStyle = function (borderStyle) {
-		setSomeValue(borderStyle, 'BorderStyle');
+	this.setBorder = function (top, left, bottom, right, color, style) {
+		setSomeValue(color, 'BorderColor');
+		setSomeValue(style, 'BorderStyle');
 	};
-	this.setBorderColor = function (borderColor) {
-		setSomeValue(borderColor, 'BorderColor');
-	};
-	var setSomeValue = function(value, propertie) {
+	var setSomeValue = function (value, propertie) {
 		for (var i = 0; i < matrix.length; i++) {
 			for (var j = 0; j < matrix[0].length; j++) {
 				matrix[i][j]['set' + propertie](value);
@@ -58,7 +56,7 @@ var Range = function (myMatrix) {
 		}
 	};
 
-	this.getCells = function() {
+	this.getCells = function () {
 		return matrix;
 	};
 };

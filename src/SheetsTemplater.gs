@@ -194,17 +194,14 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 		if (cellProperties.backgroundColor) {
 			range.setBackground(cellProperties.backgroundColor);
 		}
-		if (cellProperties.textSize) {
-			range.setTextSize(cellProperties.textSize);
+		if (cellProperties.fontSize) {
+			range.setFontSize(cellProperties.fontSize);
 		}
-		if (cellProperties.color) {
-			range.setColor(cellProperties.color);
+		if (cellProperties.fontColor) {
+			range.setFontColor(cellProperties.fontColor);
 		}
-		if (cellProperties.borderStyle) {
-			range.setBorderStyle(cellProperties.borderStyle);
-		}
-		if (cellProperties.borderColor) {
-			range.setBorderColor(cellProperties.borderColor);
+		if (cellProperties.borderStyle && cellProperties.borderColor) {
+			range.setBorder(true, true, true, true, cellProperties.borderColor, SpreadsheetApp.BorderStyle[cellProperties.borderStyle]);
 		}
 	};
 
