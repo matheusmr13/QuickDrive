@@ -25,7 +25,8 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 		permissions: [{
 			access: DriveApp.Access.ANYONE_WITH_LINK,
 			permission: DriveApp.Permission.VIEW
-		}]
+		}],
+		byField: {}
 	};
 	this._config = _config;
 	var validateConfig = function (config) {
@@ -182,17 +183,9 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 		sheet.getRange(row, col).setValue(getValueOnJson(json, command.substring(2, command.length - 1)));
 	};
 
-	function completeCell(properties) {
-		var row = properties.i + 1,
-			col = properties.j + 1,
-			command = properties.values[properties.i][properties.j],
-			sheet = properties.sheet,
-			json = properties.json,
-			cellProperties = getValueOnJson(json, command.substring(2, command.length - 1)),
-			range = sheet.getRange(row, col);
-		if (cellProperties.value) {
-			range.setValue(cellProperties.value);
-		}
+	function setCellProperties(sheet, cellProperties) {
+		var range = sheet.getRange(cellProperties.row, cellProperties.col);
+		range.setValue(cellProperties.value || '');
 		if (cellProperties.backgroundColor) {
 			range.setBackground(cellProperties.backgroundColor);
 		}
@@ -206,8 +199,21 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 			range.setBorder(true, true, true, true, true, true, cellProperties.borderColor, SpreadsheetApp.BorderStyle[cellProperties.borderStyle]);
 		}
 		if (cellProperties.rowSpan) {
-			sheet.getRange(row, col, 1, parseInt(cellProperties.rowSpan, 10)).merge();
+			sheet.getRange(cellProperties.row, cellProperties.col, 1, parseInt(cellProperties.rowSpan, 10)).merge();
 		}
+	};
+
+	function completeCell(properties) {
+		var row = properties.i + 1,
+			col = properties.j + 1,
+			command = properties.values[properties.i][properties.j],
+			sheet = properties.sheet,
+			json = properties.json,
+			cellProperties = getValueOnJson(json, command.substring(2, command.length - 1));
+
+		cellProperties.row = row;
+		cellProperties.col = col;
+		setCellProperties(sheet, cellProperties);
 	};
 
 	function insertFormula(properties) {
@@ -225,7 +231,6 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 	};
 
 	this.processSheet = function (json) {
-
 		var newSpreadSheet = getSheetNewDocument();
 		var sheet = newSpreadSheet.sheet;
 		var range = sheet.getRange(1, 1, sheet.getMaxRows(), sheet.getMaxColumns());
