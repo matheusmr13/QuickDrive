@@ -4,6 +4,7 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 		FOR_EACH: processForEach,
 		INSERT_FORMULA: insertFormula,
 		COMPLETE_CELL: completeCell,
+		SET_MATRIX: setMatrix,
 		NONE: function (properties) {
 			return;
 		}
@@ -13,7 +14,8 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 		'=': annotationFunctions.REPLACE_TEXT,
 		'~': annotationFunctions.FOR_EACH,
 		'#': annotationFunctions.INSERT_FORMULA,
-		'*': annotationFunctions.COMPLETE_CELL
+		'*': annotationFunctions.COMPLETE_CELL,
+		'+': annotationFunctions.SET_MATRIX
 
 	};
 	var _config = {
@@ -97,7 +99,6 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 	};
 
 	var getAnnotationType = function (text) {
-
 		if (isAnottation(text)) {
 			if (isValidAnnotation(text.split(':')[0])) {
 				return annotationType[text[1]] || annotationFunctions.NONE;
@@ -214,6 +215,16 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 		cellProperties.row = row;
 		cellProperties.col = col;
 		setCellProperties(sheet, cellProperties);
+	};
+
+	function setMatrix(properties) {
+		var row = properties.i + 1,
+			col = properties.j + 1,
+			sheet = properties.sheet,
+			json = properties.json;
+		if (typeof json == 'array' && json[0] && typeof json[0] == 'array') {
+			sheet.getRange(row, col, json.length, json[0].length).setValue(json);
+		}
 	};
 
 	function insertFormula(properties) {

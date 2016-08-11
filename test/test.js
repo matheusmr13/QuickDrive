@@ -39,6 +39,11 @@ describe('QuickDrive functions', function () {
 			assert.equal(QuickDrive.annotationFunctions.INSERT_FORMULA, QuickDrive.getAnnotationType('{#my.formula}'));
 			assert.equal(QuickDrive.annotationFunctions.INSERT_FORMULA, QuickDrive.getAnnotationType('{#foo.bar.with.many.properties.myList}'));
 		});
+		it('it should set matrix annotation', function () {
+			assert.equal(QuickDrive.annotationFunctions.SET_MATRIX, QuickDrive.getAnnotationType('{+myMatrix}'));
+			assert.equal(QuickDrive.annotationFunctions.SET_MATRIX, QuickDrive.getAnnotationType('{+my.matrix}'));
+			assert.equal(QuickDrive.annotationFunctions.SET_MATRIX, QuickDrive.getAnnotationType('{+foo.bar.with.many.properties.myMatrix}'));
+		});
 	});
 	describe('validateConfig', function () {
 		var createQuickDriveWithConfig = function (propertie, value) {
