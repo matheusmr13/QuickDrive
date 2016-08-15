@@ -16,7 +16,6 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 		'#': annotationFunctions.INSERT_FORMULA,
 		'*': annotationFunctions.COMPLETE_CELL,
 		'+': annotationFunctions.SET_MATRIX
-
 	};
 	var _config = {
 		folderId: '0B8cJhvYlR-sCcGR4d3VYWGZaYWM',

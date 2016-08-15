@@ -1,8 +1,8 @@
-var DriveApp = require('./mock/DriveApp.js').DriveApp;
-var Cell = require('./mock/SpreadsheetApp/Cell.js').Cell;
-var Range = require('./mock/SpreadsheetApp/Range.js').Range;
-var SpreadsheetApp = require('./mock/SpreadsheetApp.js').SpreadsheetApp;
-var QuickDriveConstructor = require('../src/SheetsTemplater.gs').QuickDrive;
+var DriveApp = require('./../../mock/DriveApp.js').DriveApp;
+var Cell = require('./../../mock/SpreadsheetApp/Cell.js').Cell;
+var Range = require('./../../mock/SpreadsheetApp/Range.js').Range;
+var SpreadsheetApp = require('./../../mock/SpreadsheetApp.js').SpreadsheetApp;
+var QuickDriveConstructor = require('../../../src/SheetsTemplater.js').QuickDrive;
 var QuickDrive = QuickDriveConstructor(DriveApp(), SpreadsheetApp(), new Range());
 var chai = require('chai');
 var assert = chai.assert;
