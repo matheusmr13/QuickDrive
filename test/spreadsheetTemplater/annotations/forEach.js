@@ -1,17 +1,10 @@
-var DriveApp = require('./../../mock/DriveApp.js').DriveApp;
-var Cell = require('./../../mock/SpreadsheetApp/Cell.js').Cell;
-var SpreadsheetApp = require('./../../mock/SpreadsheetApp.js').SpreadsheetApp;
-var QuickDriveConstructor = require('../../../src/SheetsTemplater.js').QuickDrive;
-var QuickDrive = QuickDriveConstructor(DriveApp(), SpreadsheetApp());
-var chai = require('chai');
-var assert = chai.assert;
-var expect = chai.expect;
-
-var matrixMockWithReplaceAnnotations = [
-	[new Cell('Languages that he likes'), new Cell(''), new Cell(''), new Cell('')],
-	[new Cell('{~this.curriculum.languagesThatLikes : languages}'), new Cell('{=languages}'), new Cell('{~}'), new Cell('text that will stay on last line')],
-	[new Cell('-'), new Cell('-'), new Cell('-'), new Cell('-')],
-];
+var matrixMockWithReplaceAnnotations = function() {
+	return [
+		[new Cell('Languages that he likes'), new Cell(''), new Cell(''), new Cell('')],
+		[new Cell('{~this.curriculum.languagesThatLikes : languages}'), new Cell('{=languages}'), new Cell('{~}'), new Cell('text that will stay on last line')],
+		[new Cell('-'), new Cell('-'), new Cell('-'), new Cell('-')],
+	];
+};
 
 var jsonMock = {
 	curriculum: {
@@ -26,8 +19,8 @@ var jsonMock = {
 };
 describe('forEach annotation', function () {
 	it('it should return sheet forEach replaced', function () {
-		var QuickDriveMock = new QuickDriveConstructor(DriveApp(), SpreadsheetApp(matrixMockWithReplaceAnnotations));
-		var file = QuickDriveMock.processSheet(jsonMock);
+		SpreadsheetApp._setupMock(matrixMockWithReplaceAnnotations());
+		var file = SheetTemplater.processSheet(jsonMock);
 		assert.equal(JSON.stringify([
 			['Languages that he likes', '', '', ''],
 			['', 'Java', '', ''],

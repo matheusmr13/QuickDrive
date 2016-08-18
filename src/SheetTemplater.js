@@ -1,4 +1,4 @@
-var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
+var SheetTemplater = function (DriveApp, SpreadsheetApp, newConfig) {
 	var annotationFunctions = {
 		REPLACE_TEXT: replaceValue,
 		FOR_EACH: processForEach,
@@ -31,11 +31,11 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 	};
 	this._config = _config;
 	var validateConfig = function (config) {
-		if (config.folderId && (typeof config.folderId != 'string' || config.folderId.length != 18)) {
+		if (config.folderId && (typeof config.folderId != 'string' || config.folderId.length != 28)) {
 			throw new Error('invalid-folder-id');
 		}
 
-		if (config.templateId && (typeof config.templateId != 'string' || config.templateId.length != 45)) {
+		if (config.templateId && (typeof config.templateId != 'string' || config.templateId.length != 44)) {
 			throw new Error('invalid-file-id');
 		}
 
@@ -50,6 +50,7 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 			throw new Error('invalid-stripe-color');
 		}
 	};
+	this.validateConfig = validateConfig;
 
 	if (newConfig) {
 		validateConfig(newConfig);
@@ -263,14 +264,6 @@ var QuickDrive = function (DriveApp, SpreadsheetApp, newConfig) {
 	};
 };
 
-function doPost(e) {
-	var json = e ? JSON.parse(e.parameters.data[0]) : {};
-	var config = e ? (e.parameters.config ? JSON.parse(e.parameters.config[0]) : {}) : {};
-	var QuickDriveObj = new QuickDrive(DriveApp, SpreadsheetApp, config);
-	var newFile = QuickDriveObj.processSheet(json);
-	return ContentService.createTextOutput(newFile.fileId);
-};
-
 if (typeof module !== 'undefined' && module.exports != null) {
-	exports.QuickDrive = QuickDrive;
+	exports.SheetTemplater = SheetTemplater;
 }

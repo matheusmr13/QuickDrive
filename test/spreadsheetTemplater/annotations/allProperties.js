@@ -1,17 +1,9 @@
-var DriveApp = require('./../../mock/DriveApp.js').DriveApp;
-var Cell = require('./../../mock/SpreadsheetApp/Cell.js').Cell;
-var Range = require('./../../mock/SpreadsheetApp/Range.js').Range;
-var SpreadsheetApp = require('./../../mock/SpreadsheetApp.js').SpreadsheetApp;
-var QuickDriveConstructor = require('../../../src/SheetsTemplater.js').QuickDrive;
-var QuickDrive = QuickDriveConstructor(DriveApp(), SpreadsheetApp(), new Range());
-var chai = require('chai');
-var assert = chai.assert;
-var expect = chai.expect;
-
-var matrixMockWithReplaceAnnotations = [
-	[new Cell('{*this.propertyCell}'), new Cell('{*this.anotherPropertyCell}')],
-	[new Cell('{*this.long.obj.reference.cell}'), new Cell('')]
-];
+var matrixMockWithReplaceAnnotations = function() {
+	return [
+		[new Cell('{*this.propertyCell}'), new Cell('{*this.anotherPropertyCell}')],
+		[new Cell('{*this.long.obj.reference.cell}'), new Cell('')]
+	];
+};
 
 var jsonMock = {
 	propertyCell: {
@@ -42,8 +34,8 @@ var jsonMock = {
 
 describe('test specific annotations', function () {
 	it('all properties annotation', function () {
-		var QuickDriveMock = new QuickDriveConstructor(DriveApp(), SpreadsheetApp(matrixMockWithReplaceAnnotations));
-		var file = QuickDriveMock.processSheet(jsonMock);
+		SpreadsheetApp._setupMock(matrixMockWithReplaceAnnotations());
+		var file = SheetTemplater.processSheet(jsonMock);
 		var range = file.sheet._processFormulas().getRange(1,1,2,2).getCells();
 		var firstCell = range[0][0];
 		var secondCell = range[0][1];

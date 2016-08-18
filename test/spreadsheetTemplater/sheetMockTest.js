@@ -1,7 +1,3 @@
-var SpreadsheetApp = require('./../mock/SpreadsheetApp.js').SpreadsheetApp();
-var DriveApp = require('./../mock/DriveApp.js').DriveApp();
-var assert = require('chai').assert;
-
 describe('DriveApp sheet mock test', function () {
 	describe('copy of file with name in folder', function () {
 		it('it should return file with specified id', function () {
