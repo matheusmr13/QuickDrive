@@ -6,6 +6,7 @@ var QuickDrive = function (DriveApp, SpreadsheetApp) {
 	};
 };
 
+
 if (typeof module !== 'undefined' && module.exports != null) {
 	exports.QuickDrive = QuickDrive;
 }
