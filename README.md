@@ -1,6 +1,8 @@
 # QuickDrive
 Google App Script Templater to create documents and spreadsheets with simple JSON
 
+[![Coverage Status](https://coveralls.io/repos/github/matheusmr13/QuickDrive/badge.svg?branch=master)](https://coveralls.io/github/matheusmr13/QuickDrive?branch=master)
+
 SpreadSheet Sample: https://docs.google.com/spreadsheets/d/1l7sMxfD-qh4sbeu6Ax0z6v84YdahXDTG8hlPcE_vkEo/edit?usp=sharing
 
 Google App Script last deployed url https://script.google.com/macros/s/AKfycbxF-s25Ceg0v1i9ZqRimDBDJi2gWMCfQSjKAc1cmlWx3_e1G7py/exec
