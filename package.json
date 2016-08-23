@@ -13,9 +13,14 @@
     "update": "gapps upload"
   },
   "dependencies": {
+  },
+  "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^2.5.3",
-    "node-google-apps-script": "^1.1.5"
-  },
-  "devDependencies": {}
+    "node-google-apps-script": "^1.1.5",
+    "coveralls": "^2.11.12",
+    "mocha-lcov-reporter": "^1.2.0",
+    "sinon": "~1.8.0",
+    "istanbul": "~0.2.4"
+  }
 }
