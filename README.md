@@ -3,6 +3,7 @@ Google App Script Templater to create documents and spreadsheets with simple JSO
 
 [![Coverage Status](https://travis-ci.org/matheusmr13/QuickDrive.svg?branch=master)](https://coveralls.io/github/matheusmr13/QuickDrive?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/matheusmr13/QuickDrive/badge.svg?branch=master)](https://coveralls.io/github/matheusmr13/QuickDrive?branch=master)
+[![Coverage Status](https://codeclimate.com/github/matheusmr13/QuickDrive/badges/gpa.svg)](https://codeclimate.com/github/matheusmr13/QuickDrive)
 
 SpreadSheet Sample: https://docs.google.com/spreadsheets/d/1l7sMxfD-qh4sbeu6Ax0z6v84YdahXDTG8hlPcE_vkEo/edit?usp=sharing
 
