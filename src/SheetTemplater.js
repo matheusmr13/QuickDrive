@@ -187,15 +187,6 @@ var SheetTemplater = function (DriveApp, SpreadsheetApp, newConfig) {
 		properties.json[entityName] = undefined;
 	};
 
-	function replaceValue(properties) {
-		var row = properties.i + 1,
-			col = properties.j + 1,
-			command = properties.values[properties.i][properties.j],
-			sheet = properties.sheet,
-			json = properties.json;
-		sheet.getRange(row, col).setValue(getValueOnJson(json, command.substring(2, command.length - 1)));
-	};
-
 	function setCellProperties(sheet, cellProperties) {
 		var range = sheet.getRange(cellProperties.row, cellProperties.col);
 		range.setValue(cellProperties.value || '');
@@ -246,6 +237,15 @@ var SheetTemplater = function (DriveApp, SpreadsheetApp, newConfig) {
 			sheet = properties.sheet,
 			json = properties.json;
 		sheet.getRange(row, col).setFormula('=' + getValueOnJson(json, command.substring(2, command.length - 1)));
+	};
+
+	function replaceValue(properties) {
+		var row = properties.i + 1,
+			col = properties.j + 1,
+			command = properties.values[properties.i][properties.j],
+			sheet = properties.sheet,
+			json = properties.json;
+		sheet.getRange(row, col).setValue(getValueOnJson(json, command.substring(2, command.length - 1)));
 	};
 
 	var processCell = function (properties) {
