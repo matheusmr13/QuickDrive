@@ -31,19 +31,31 @@ var SheetTemplater = function (DriveApp, SpreadsheetApp, newConfig) {
 	};
 	this._config = _config;
 	var validateConfig = function (config) {
-		if (config.folderId && (typeof config.folderId != 'string' || config.folderId.length != 28)) {
+		var isString = function(obj) {
+			return typeof obj == 'string';
+		};
+		var isNull = function(obj) {
+			return typeof obj == 'undefined' || obj === null;
+		};
+		var isStringOfLength = function(string, length) {
+			return  isString(string) && (!length || string.length === length);
+		};
+		var isValidPropertie = function(propertie, length) {
+			return isNull(propertie) || isStringOfLength(propertie, length);
+		};
+		if (!isValidPropertie(config.folderId, 28)) {
 			throw new Error('invalid-folder-id');
 		}
 
-		if (config.templateId && (typeof config.templateId != 'string' || config.templateId.length != 44)) {
+		if (!isValidPropertie(config.templateId, 44)) {
 			throw new Error('invalid-file-id');
 		}
 
-		if (config.newDocumentName && (typeof config.newDocumentName != 'string')) {
+		if (!isValidPropertie(config.newDocumentName)) {
 			throw new Error('invalid-file-name');
 		}
 
-		if (config.stripeColor && (typeof config.stripeColor != 'string' ||
+		if (!isNull(config.stripeColor) && (!isString(config.stripeColor) ||
 				(config.stripeColor[0] == '#' && (config.stripeColor.length != 4 && config.stripeColor.length != 7) ||
 					(config.stripeColor[0] != '#' && !(config.stripeColor[0] == 'r' && config.stripeColor[1] == 'g' && config.stripeColor[2] == 'b'))
 				))) {
