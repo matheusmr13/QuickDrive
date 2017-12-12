@@ -1,12 +1,12 @@
+const extendGlobal = require('app-script-mock');
+
 describe('SpreadsheetTemplater tests', function(){
 	before(function (){
 		var chai = require('chai');
 		global.assert = chai.assert;
 		global.expect = chai.expect;
 
-		global.DriveApp = require('./mock/DriveApp.js').DriveApp();
-		global.SpreadsheetApp = require('./mock/SpreadsheetApp.js').SpreadsheetApp();
-		global.Cell = require('./mock/SpreadsheetApp/Cell.js').Cell;
+		extendGlobal(global)
 
 		var QuickDriveConstructor = require('./../src/QuickDrive.js').QuickDrive,
 			QuickDrive = new QuickDriveConstructor(DriveApp, SpreadsheetApp);
